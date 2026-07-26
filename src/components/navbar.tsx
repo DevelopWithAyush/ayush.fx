@@ -1,12 +1,19 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { DATA } from "@/data/resume";
 import { FloatingDock } from "@/components/magicui/floating-dock";
 import { useTheme } from "next-themes";
 import { SunIcon, MoonIcon } from "@radix-ui/react-icons";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function Navbar() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const links = [
     ...DATA.navbar.map((item) => ({
@@ -28,13 +35,41 @@ export default function Navbar() {
       }),
     {
       title: "Theme",
-      icon: (
-        <>
+      icon: !mounted ? (
+        <div className="relative h-full w-full flex items-center justify-center">
           <SunIcon className="h-full w-full dark:hidden" />
           <MoonIcon className="hidden h-full w-full dark:block" />
-        </>
+        </div>
+      ) : (
+        <div className="relative h-full w-full flex items-center justify-center">
+          <AnimatePresence mode="wait" initial={false}>
+            {resolvedTheme === "dark" ? (
+              <motion.div
+                key="moon"
+                initial={{ opacity: 0, rotate: -30, scale: 0.6 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 30, scale: 0.6 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center text-neutral-500 dark:text-neutral-300 [&>svg]:size-full"
+              >
+                <MoonIcon />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="sun"
+                initial={{ opacity: 0, rotate: -30, scale: 0.6 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 30, scale: 0.6 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center text-neutral-500 dark:text-neutral-300 [&>svg]:size-full"
+              >
+                <SunIcon />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       ),
-      onClick: () => setTheme(theme === "dark" ? "light" : "dark"),
+      onClick: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
     },
   ];
 
