@@ -20,10 +20,27 @@ const geistMono = Geist_Mono({
   variable: "--font-mono",
 });
 
-
 export const metadata: Metadata = {
-  title: "Shani - Portfolio",
-  description: "Shani - Professional Video Editor specializing in short-form videos, long-form videos, and SaaS product showcases. Expert in editing, pacing, and visual storytelling.",
+  metadataBase: new URL(DATA.url),
+  title: {
+    default: `${DATA.name} - Portfolio`,
+    template: `%s | ${DATA.name} - Portfolio`,
+  },
+  description: DATA.description,
+  openGraph: {
+    title: `${DATA.name} - Portfolio`,
+    description: DATA.description,
+    url: DATA.url,
+    siteName: `${DATA.name} - Portfolio`,
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${DATA.name} - Portfolio`,
+    description: DATA.description,
+    creator: "@editsxayush",
+  },
 };
 
 export default function RootLayout({
