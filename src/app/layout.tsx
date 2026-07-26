@@ -20,25 +20,12 @@ const geistMono = Geist_Mono({
   variable: "--font-mono",
 });
 
+
 export const metadata: Metadata = {
-  metadataBase: new URL(DATA.url),
-  title: `${DATA.name} - Video Editor Portfolio`,
-  description: DATA.description,
-  openGraph: {
-    title: `${DATA.name} - Video Editor Portfolio`,
-    description: DATA.description,
-    url: DATA.url,
-    siteName: `${DATA.name} Portfolio`,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${DATA.name} - Video Editor Portfolio`,
-    description: DATA.description,
-    creator: "@editsxayush",
-  },
+  title: "Shani - Portfolio",
+  description: "Shani - Professional Video Editor specializing in short-form videos, long-form videos, and SaaS product showcases. Expert in editing, pacing, and visual storytelling.",
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
