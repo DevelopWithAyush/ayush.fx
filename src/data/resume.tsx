@@ -60,11 +60,35 @@ export const DATA = {
         id: "sf-5",
         video: "https://res.cloudinary.com/daqjqpva/video/upload/v1785018681/Real_03_qbjoeh.mp4",
       },
+      {
+        id: "sf-6",
+        video: "https://res.cloudinary.com/dnkycods9/video/upload/v1782799817/1_phomd9.mp4",
+      },
+      {
+        id: "sf-7",
+        video: "https://res.cloudinary.com/dnkycods9/video/upload/v1782799859/2_zvxyzd.mp4",
+      },
+      {
+        id: "sf-8",
+        video: "https://res.cloudinary.com/dnkycods9/video/upload/v1782800409/10_k2prtb.mp4",
+      },
     ],
     longForm: [
       {
         id: "lf-1",
         video: "https://res.cloudinary.com/daqjqpva/video/upload/v1785021510/Video_1_qqmydl.mp4",
+      },
+      {
+        id: "lf-2",
+        video: "https://res.cloudinary.com/dnkycods9/video/upload/v1782908119/long_6_re_swzeed.mp4",
+      },
+      {
+        id: "lf-3",
+        video: "https://res.cloudinary.com/dnkycods9/video/upload/v1782897028/long_4_sbajgv.mp4",
+      },
+      {
+        id: "lf-4",
+        video: "https://res.cloudinary.com/dnkycods9/video/upload/v1782908125/long_5_re_vihqtc.mp4",
       },
     ],
     saas: [
