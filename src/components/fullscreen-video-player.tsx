@@ -37,6 +37,11 @@ export function FullscreenVideoPlayer({
 
   const isClient = useIsClient();
 
+  // Automatically optimize Cloudinary video URLs to serve in a packed/compressed format
+  const optimizedVideoUrl = videoUrl?.includes("cloudinary.com") && !videoUrl.includes("f_auto")
+    ? videoUrl.replace("/upload/", "/upload/f_auto,q_auto/")
+    : videoUrl;
+
   const togglePlay = useCallback(() => {
     if (!videoRef.current) return;
     if (isPlaying) {
@@ -68,9 +73,18 @@ export function FullscreenVideoPlayer({
   // Autoplay video on load
   useEffect(() => {
     if (isOpen && videoRef.current) {
-      videoRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch((error) => {
+            console.warn("Autoplay blocked by browser. User interaction required.", error);
+            setIsPlaying(false);
+          });
+      }
+    } else if (!isOpen && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
   }, [isOpen, videoUrl]);
 
@@ -183,18 +197,36 @@ export function FullscreenVideoPlayer({
           {/* Video Wrapper */}
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative z-10 w-full h-full max-w-6xl max-h-[85vh] flex items-center justify-center p-4 md:p-8"
+            className="relative z-10 w-full h-full max-w-6xl max-h-[85vh] flex items-center justify-center p-4 md:p-8 group"
           >
             <video
               ref={videoRef}
-              src={videoUrl}
+              src={optimizedVideoUrl}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               onEnded={handleVideoEnded}
               onClick={togglePlay}
+              preload="auto"
               className="w-full h-full object-contain rounded-lg shadow-2xl cursor-pointer"
               playsInline
             />
+
+            {/* Large Play Button Overlay if Paused */}
+            {!isPlaying && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+              >
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  className="p-6 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white shadow-2xl pointer-events-auto cursor-pointer hover:bg-black/60 transition-all hover:scale-110"
+                  onClick={togglePlay}
+                >
+                  <Play className="size-12 fill-white ml-2" />
+                </motion.div>
+              </div>
+            )}
 
             {/* Floating Top Right Close Button */}
             <button

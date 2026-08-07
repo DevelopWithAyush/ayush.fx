@@ -55,20 +55,23 @@ export function ProjectCard({
   className,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Generate lightweight poster image from Cloudinary URL
+  const posterUrl = video?.includes("cloudinary.com")
+    ? video.replace("/upload/", "/upload/f_auto,q_auto,w_800/").replace(/\.mp4$/, ".jpg")
+    : video?.replace(/\.mp4$/, ".jpg");
+
+  const optimizedVideoUrl = video?.includes("cloudinary.com") && !video.includes("f_auto")
+    ? video.replace("/upload/", "/upload/f_auto,q_auto/")
+    : video;
 
   const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((err) => {
-        console.warn("Video playback was interrupted or blocked:", err);
-      });
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
+    setIsHovered(false);
   };
 
   return (
@@ -90,15 +93,27 @@ export function ProjectCard({
           className="block"
         >
           {video ? (
-            <video
-              ref={videoRef}
-              src={video}
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              className="w-full h-48 object-cover"
-            />
+            <>
+              {posterUrl && (
+                <img
+                  src={posterUrl}
+                  alt={title}
+                  loading="lazy"
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              {isHovered && (
+                <video
+                  ref={videoRef}
+                  src={optimizedVideoUrl}
+                  loop
+                  muted
+                  playsInline
+                  autoPlay
+                  className="absolute inset-0 w-full h-48 object-cover z-10"
+                />
+              )}
+            </>
           ) : image ? (
             <ProjectImage src={image} alt={title} />
           ) : (

@@ -23,20 +23,23 @@ interface ProjectVideoCardProps {
 
 function ProjectVideoCard({ project, aspectClass, onClick }: ProjectVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Generate lightweight poster image from Cloudinary URL
+  const posterUrl = project.video?.includes("cloudinary.com")
+    ? project.video.replace("/upload/", "/upload/f_auto,q_auto,w_800/").replace(/\.mp4$/, ".jpg")
+    : project.video?.replace(/\.mp4$/, ".jpg");
+
+  const optimizedVideoUrl = project.video?.includes("cloudinary.com") && !project.video.includes("f_auto")
+    ? project.video.replace("/upload/", "/upload/f_auto,q_auto/")
+    : project.video;
 
   const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((err) => {
-        console.warn("Video playback was interrupted or blocked:", err);
-      });
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
+    setIsHovered(false);
   };
 
   return (
@@ -46,19 +49,31 @@ function ProjectVideoCard({ project, aspectClass, onClick }: ProjectVideoCardPro
       onMouseLeave={handleMouseLeave}
       className={`group relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-950 shadow-md cursor-pointer hover:shadow-xl hover:border-neutral-300 dark:hover:border-neutral-700 transition-all duration-300 w-full ${aspectClass}`}
     >
-      {/* Silent preview looping on hover */}
-      <video
-        ref={videoRef}
-        src={project.video}
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        className="w-full h-full object-cover transition-opacity duration-300"
-      />
+      {/* Lightweight Thumbnail Image */}
+      {posterUrl && (
+        <img
+          src={posterUrl}
+          alt="Video Thumbnail"
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+        />
+      )}
+
+      {/* Silent preview looping on hover (mounted conditionally to save memory) */}
+      {isHovered && (
+        <video
+          ref={videoRef}
+          src={optimizedVideoUrl}
+          loop
+          muted
+          playsInline
+          autoPlay
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-10"
+        />
+      )}
 
       {/* Play Icon Hover Overlay */}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-300">
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-300 z-20">
         <motion.div
           className="p-4 rounded-full bg-white/20 hover:bg-white/35 text-white backdrop-blur-md border border-white/25 transition-all shadow-lg"
           whileHover={{ scale: 1.1 }}
@@ -120,7 +135,7 @@ export default function ProjectsSection({ category }: ProjectsSectionProps) {
         </div>
 
         {/* Video Grid */}
-        <div className={`grid gap-4 max-w-[800px] mx-auto w-full ${gridClass}`}>
+        <div className={`grid gap-4 max-w-200 mx-auto w-full ${gridClass}`}>
           {projects.map((project: any, id: number) => {
             return (
               <BlurFade
